@@ -10,7 +10,8 @@ class Actor(nn.Module):
         super().__init__()
         self.hidden = nn.Sequential(
             nn.Linear(28, 32),
-            nn.ReLU()
+            nn.ReLU(),
+            nn.Dropout(p=.2)
         )
         self.out = nn.Linear(32, 5)
         self._init_param()
@@ -19,9 +20,9 @@ class Actor(nn.Module):
 
     def _init_param(self):
         # He init. for hidden layer
-        nn.init.normal(self.hidden.weight.data,
-                       mean=0., std=math.sqrt(2 / self.hidden.in_features))
-        nn.init.constant(self.hidden.bias.data, 0.)
+        nn.init.normal(self.hidden[0].weight.data,
+                       mean=0., std=math.sqrt(2 / self.hidden[0].in_features))
+        nn.init.constant(self.hidden[0].bias.data, 0.)
 
         # zeroing output layer
         nn.init.constant(self.out.weight.data, 0.)

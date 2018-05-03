@@ -70,7 +70,7 @@ def roll_out(env, model, train_mode):
     r_lst = []   # store reward
     p_lst = []   # store price
     P_lst = []   # store position
-    if train_mode: buffer = []
+    buffer = []
 
     s = env.reset()
 
@@ -92,7 +92,7 @@ def roll_out(env, model, train_mode):
         P_lst.append(i_act)
 
         # Save transitions
-        if train_mode: buffer.append((s, act, r))
+        buffer.append((s, act, r))
 
         if done: break
 
@@ -100,41 +100,40 @@ def roll_out(env, model, train_mode):
         s = s_
 
     # Learning when episode finishes
-    if train_mode:
-        model.train()
+    model.train()
 
-        S, A, R = zip(*buffer)
-        del buffer[:]
+    S, A, R = zip(*buffer)
+    del buffer[:]
 
-        S = Variable(torch.cat(S))
-        A = Variable(torch.cat(A))
+    S = Variable(torch.cat(S))
+    A = Variable(torch.cat(A))
 
-        # Compute target
-        Q = []
-        ret = 0
-        for r in reversed(R):
-            ret = r + .9 * ret
-            Q.append(ret)
-        Q.reverse()
+    # Compute target
+    Q = []
+    ret = 0
+    for r in reversed(R):
+        ret = r + .9 * ret
+        Q.append(ret)
+    Q.reverse()
 
-        # standardize Q
-        Q = np.array(Q).astype(np.float32)
-        Q -= Q.mean()
-        Q /= Q.std() + 1e-6
-        Q.clip(min=-10, max=10)
-        Q = np.expand_dims(Q, axis=1)
+    # standardize Q
+    Q = np.array(Q).astype(np.float32)
+    Q -= Q.mean()
+    Q /= Q.std() + 1e-6
+    Q.clip(min=-10, max=10)
+    Q = np.expand_dims(Q, axis=1)
 
-        Q = Variable(torch.from_numpy(Q))
+    Q = Variable(torch.from_numpy(Q))
 
-        # PG update
-        A_Pr = model.forward(S).gather(1, A).clamp(min=1e-7, max=1 - 1e-7)
+    # PG update
+    A_Pr = model.forward(S).gather(1, A).clamp(min=1e-7, max=1 - 1e-7)
 
-        loss = -(Q * torch.log(A_Pr)).mean()
-        model.optim.zero_grad()
-        loss.backward()
-        model.optim.step()
+    loss = -(Q * torch.log(A_Pr)).mean()
+    model.optim.zero_grad()
+    loss.backward()
+    model.optim.step()
 
-        model.eval()
+    model.eval()
     return ret, r_lst, p_lst, P_lst
 
 

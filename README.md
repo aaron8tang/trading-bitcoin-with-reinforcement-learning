@@ -34,7 +34,7 @@ Dependecies:
 
 ## Data
 
-Bitcoin data is publically accessible from [Kaggle](https://www.kaggle.com/mczielinski/bitcoin-historical-data/data), although you do need an account to download them. We will use the data in the "coinbaseUSD_1-min_data_2014-12-01_to_2018-03-27.csv" file that you can choose on the left panel. Download the file to the same directory which you clone the repo to and run `resample.py`. This will give you the file `BTCUSD-15Min-Data.pkl` which we will use to train our agent. The pickle file contains a dictionary with two keys: *data* and *label*. The value for both keys are a pandas dataframe. The first one holds all the 21 features as input to the agent, while the second one holds the OHLCV data we will later use to compute the reward function.
+Bitcoin data is publically accessible from [Kaggle](https://www.kaggle.com/mczielinski/bitcoin-historical-data/data), although you do need an account to download them. We will use the data in the "coinbaseUSD_1-min_data_2014-12-01_to_2018-03-27.csv" file that you can choose on the left panel. Download the file to the same directory which you clone the repo to and run `resample.py`. This will give you the file `BTCUSD-15Min-Data.pkl` which we will use to train our agent. The pickle file contains a dictionary with two keys: *data* and *label*. The value for both keys are a pandas dataframe. The first one holds all the 23 features as input to the agent, while the second one holds the OHLCV data we will later use to compute the reward function.
 
 
 

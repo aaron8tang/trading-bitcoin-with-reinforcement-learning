@@ -2,7 +2,9 @@
 
 This [post](https://launchpad.ai/blog/trading-bitcoin) describes how to apply reinforcement learning algorithm to trade Bitcoin. While implementation details are given in the post, no code was provided from the author. So I decide give it a try and reproduce the result myself. I will briefly explain my implementation as well as some differences from the original method presented in the post.
 
-![bitcoin](bitcoin.png)
+<p align="center"><img src="bitcoin.png">
+
+</p>
 
 Dependecies:
 

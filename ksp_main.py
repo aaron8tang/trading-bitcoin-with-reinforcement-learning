@@ -10,6 +10,7 @@ import torch
 
 from agent import Actor
 from env import Env
+from matplotlib import pyplot
 
 
 def plot_result(title, r_lst, p_lst):
@@ -137,6 +138,11 @@ def roll_out(env, model, train_mode):
     return ret, r_lst, p_lst, P_lst
 
 
+def plot_series(s):
+	s.plot()
+	pyplot.show()
+
+
 def main(epochs):
 
     # create model
@@ -149,7 +155,13 @@ def main(epochs):
     data = data_dict['data']
     label = data_dict['label']
 
-    # train-test split 70% and 30%
+    '''OHLC is in dataframe label. indicators are in dataframe data.'''
+    plot_series(label['c'])
+
+    '''
+    train-test split 70% and 30%
+    所以绘制出来的buyhold图形可能和完整的buyhold不一样
+    '''
     split = int(.7 * len(data))
 
     train_data = data.ix[:split]
@@ -160,9 +172,12 @@ def main(epochs):
     # train
     ret_lst = []
     for i_ep in range(epochs):
+        '''任意选96个time step，所以得保证idx小于长度减去96'''
         idx = np.random.randint(len(train_data) - 96)
 
-        # sample a consecutive of 96 steps
+        ''' sample a consecutive of 96 steps
+        一共有3个action，交易的对象是0~4个bitcoin，任选之一
+       '''
         env = Env(train_data[idx: idx + 96],
                   train_label[idx: idx + 96],
                   init_act=np.random.randint(5))

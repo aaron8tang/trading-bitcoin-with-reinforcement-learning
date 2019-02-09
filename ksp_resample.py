@@ -2,14 +2,15 @@ import os.path as path
 import pandas as pd
 import numpy as np
 import pickle
+from matplotlib import pyplot
 
 script_path = path.dirname(__file__)
 
 
 def OHLCV(df):
     keys = [
-        'dt',
-        'open', 'high', 'low', 'close', 'vol'
+        'date',
+        'o', 'h', 'l', 'c', 'v'
     ]
 
     tracker = {}
@@ -43,8 +44,8 @@ def OHLCV(df):
 def feat_extract(df):
     import talib
 
-    close = df['close'].values.astype(np.float)
-    vol = df['vol'].values.astype(np.float)
+    close = df['c'].values.astype(np.float)
+    vol = df['v'].values.astype(np.float)
     df_ = pd.DataFrame(index=df.index)
 
     df_['r'] = np.log(talib.ROCR(close, timeperiod=1))
@@ -94,6 +95,11 @@ def feat_extract(df):
     return df_
 
 
+def plot_series(s):
+	s.plot()
+	pyplot.show()
+
+
 if __name__ == '__main__':
     
     # load csv
@@ -103,7 +109,8 @@ if __name__ == '__main__':
                      parse_dates=True)
 
     # convert unix timestamp to datetime
-    df.index = pd.to_datetime(df.index, unit='s')
+    # df.index = pd.to_datetime(df.index, unit='s')
+    df.index = pd.to_datetime(df.index)
 
     # select period between Dec. 1, 2014 ~ Jun. 14, 2017
     '''
@@ -114,9 +121,8 @@ if __name__ == '__main__':
     '''
 
     # drop and change column names
-    df = df[['Open', 'High', 'Low', 'Close', 'Volume_(BTC)']]
-    df.rename(columns={'Volume_(BTC)': 'Volume'}, inplace=True)
-    df = OHLCV(df)
+    df = df[['o', 'h', 'l', 'c', 'v']]
+    # df = OHLCV(df)
 
     # # save the csv file for further use if you want
     # save_path = path.join(script_path, 'BTCUSD-15Min.csv')
@@ -131,6 +137,8 @@ if __name__ == '__main__':
         'data': feat_df,
         'label': df
     }
+
+    plot_series(df['c'])
 
     save_path = path.join(script_path, 'data.pkl')
     with open(save_path, mode='wb') as handler:
